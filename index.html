@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111827">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+  <title>BandLab Vocal Rack &amp; BOSS DD-3 Studio</title>
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --card: #151a23;
+      --card-inner: #1d2432;
+      --border: #2a3447;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --accent: #ef4444;
+      --blue: #38bdf8;
+      --green: #10b981;
+      --amber: #f59e0b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 16px 12px 44px;
+      display: flex;
+      justify-content: center;
+    }
+    .rack {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .topbar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+    .brand span {
+      font-size: 11px;
+      color: var(--blue);
+      font-weight: 700;
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-install {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 11px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .module {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .mod-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .mod-title {
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+    }
+    .dot.off {
+      background: #4b5563;
+      box-shadow: none;
+    }
+    .switch-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
+    input[type="file"] {
+      width: 100%;
+      background: var(--card-inner);
+      border: 1px dashed #3b475e;
+      padding: 9px;
+      border-radius: 10px;
+      color: #d1d5db;
+      font-size: 12px;
+      margin-bottom: 9px;
+      cursor: pointer;
+    }
+    .row {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+    button.btn {
+      flex: 1;
+      padding: 9px 8px;
+      border: 1px solid #334155;
+      border-radius: 9px;
+      background: var(--card-inner);
+      color: #f3f4f6;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.12s;
+    }
+    button.btn:hover:not(:disabled) {
+      border-color: #64748b;
+      background: #263042;
+    }
+    button.btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    button.btn.primary { background: #0284c7; border-color: #38bdf8; color: #fff; }
+    button.btn.green { background: #059669; border-color: #34d399; color: #fff; }
+    button.btn.mic.active { background: #dc2626; border-color: #f87171; color: #fff; }
+    button.btn.export {
+      width: 100%;
+      margin-top: 8px;
+      background: linear-gradient(90deg, #d97706, #ea580c);
+      border: none;
+      color: #fff;
+      padding: 11px;
+    }
+    button.pill {
+      flex: 1;
+      padding: 7px 4px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: var(--card-inner);
+      color: #cbd5e1;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button.pill.active {
+      background: var(--accent);
+      border-color: #f87171;
+      color: #fff;
+    }
+    .slider-row {
+      margin-bottom: 9px;
+    }
+    .slider-row:last-child { margin-bottom: 0; }
+    .slider-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-bottom: 4px;
+    }
+    .slider-meta span.val {
+      color: var(--blue);
+      font-family: monospace;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--blue);
+      cursor: pointer;
+      margin: 0;
+    }
+    .eq-bars {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      background: var(--card-inner);
+      padding: 9px;
+      border-radius: 10px;
+      margin-top: 6px;
+    }
+    .eq-cell {
+      text-align: center;
+    }
+    .eq-cell small {
+      display: block;
+      font-size: 9.5px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .eq-cell strong {
+      font-size: 12px;
+      color: var(--green);
+      font-family: monospace;
+    }
+    .tempo-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-inner);
+      padding: 10px 12px;
+      border-radius: 10px;
+      margin-bottom: 9px;
+    }
+    .bpm-big {
+      font-size: 24px;
+      font-weight: 800;
+      font-family: monospace;
+      color: var(--blue);
+    }
+    .badge {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+    }
+    .badge.warn {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+    }
+    .meter {
+      height: 5px;
+      background: #0f131a;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--green);
+      transition: width 0.08s;
+    }
+    .master-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #fff;
+      background: var(--accent);
+      cursor: pointer;
+    }
+    .master-btn.bypassed {
+      background: #374151;
+    }
+  </style>
+</head>
+<body>
+  <div class="rack">
+    <!-- Top Header -->
+    <div class="topbar">
+      <div class="brand">
+        <h1>BANDLAB &times; BOSS DD-3 RACK</h1>
+        <span>Zero-Artifact DSP &bull; Auto-Tempo &bull; Auto-EQ</span>
+      </div>
+      <div class="top-actions">
+        <button class="btn-install" id="installBtn">&#11015; Install App</button>
+      </div>
+    </div>
+
+    <!-- 1. Audio Input & Offline WAV Export -->
+    <div class="module">
+      <div class="mod-head">
+        <span class="mod-title"><span class="dot" id="audioDot"></span>1. Audio Source &amp; Studio Export</span>
+        <span id="fileLabel" style="font-size:11px; color:var(--muted);">Ready</span>
+      </div>
+      <input type="file" id="audioFile" accept="audio/*">
+      <div class="row">
+        <button class="btn primary" id="playBtn" disabled>&#9654; Play / Pause</button>
+        <button class="btn green" id="grooveBtn">&#9835; Test Groove</button>
+        <button class="btn mic" id="micBtn">&#127908; Live Mic</button>
+      </div>
+      <button class="btn export" id="exportBtn" disabled>&#128190; Export Processed Audio (.WAV)</button>
+      <audio id="player" crossorigin="anonymous"></audio>
+    </div>
+
+    <!-- 2. BandLab Noise Gate (Soft-Knee Downward Expander) -->
+    <div class="module">
+      <div class="mod-head">
+        <span class="mod-title"><span class="dot" id="gateDot"></span>2. BandLab Noise Gate (Smooth)</span>
+        <label class="switch-label"><input type="checkbox" id="gateToggle" checked> Active</label>
+      </div>
+      <div class="slider-row">
+        <div class="slider-meta"><span>Gate Threshold (Auto-Floor)</span><span class="val" id="gateVal">35%</span></div>
+        <input type="range" id="gateSlider" min="0" max="1" step="0.01" value="0.35">
+      </div>
+      <div class="meter"><div class="meter-fill" id="gateMeter"></div></div>
+    </div>
+
+    <!-- 3. BandLab Auto Voice EQ (Dynamic Spectral Balancer) -->
+    <div class="module">
+      <div class="mod-head">
+        <span class="mod-title"><span class="dot" id="eqDot"></span>3. BandLab Auto Voice EQ</span>
+        <label class="switch-label"><input type="checkbox" id="eqToggle" checked> Auto Track</label>
+      </div>
+      <div style="font-size:11px; color:var(--blue); font-weight:700;" id="eqProfile">
+        Mode: Adaptive Vocal Curve (Listening...)
+      </div>
+      <div class="eq-bars">
+        <div class="eq-cell"><small>HPF CUT</small><strong id="eqHpfVal">90 Hz</strong></div>
+        <div class="eq-cell"><small>MUD (320Hz)</small><strong id="eqMudVal">-2.5 dB</strong></div>
+        <div class="eq-cell"><small>CLARITY (3.2k)</small><strong id="eqPresVal">+3.0 dB</strong></div>
+        <div class="eq-cell"><small>AIR (9kHz)</small><strong id="eqAirVal">+2.2 dB</strong></div>
+      </div>
+    </div>
+
+    <!-- 4. BOSS DD-3 & BandLab Echo / Ping-Pong Delay (100% Zero Khar-Khar) -->
+    <div class="module">
+      <div class="mod-head">
+        <span class="mod-title"><span class="dot" id="delayDot"></span>4. Delay &amp; Ping-Pong Echo (Auto-BPM)</span>
+        <label class="switch-label"><input type="checkbox" id="delayToggle" checked> Active</label>
+      </div>
+
+      <!-- Delay Mode Selector: Standard DD-3 vs BandLab Stereo Ping-Pong vs Slapback Echo -->
+      <div class="row" style="margin-bottom:9px;">
+        <button class="pill active" data-dmode="digital">DD-3 Digital</button>
+        <button class="pill" data-dmode="pingpong">Ping-Pong Stereo</button>
+        <button class="pill" data-dmode="analog">Warm Tape Echo</button>
+      </div>
+
+      <div class="tempo-box">
+        <div>
+          <span class="bpm-big" id="bpmNum">120</span>
+          <span style="font-size:11px; font-weight:800; color:var(--muted);">BPM</span>
+        </div>
+        <span class="badge" id="bpmBadge">AUTO READY</span>
+        <div style="display:flex; gap:4px;">
+          <button class="pill" id="bpmHalf" style="padding:5px 8px;">/2</button>
+          <button class="pill" id="bpmDouble" style="padding:5px 8px;">x2</button>
+          <button class="pill" id="tapBtn" style="padding:5px 9px;">TAP</button>
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom:10px;">
+        <button class="pill" data-sub="1.0">1/4 Note</button>
+        <button class="pill active" data-sub="0.75">Dotted 1/8</button>
+        <button class="pill" data-sub="0.5">1/8 Note</button>
+        <button class="pill" data-sub="0.25">1/16 Note</button>
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-meta"><span>Echo Mix (E.LEVEL)</span><span class="val" id="dMixVal">40%</span></div>
+        <input type="range" id="dMix" min="0" max="0.80" step="0.01" value="0.40">
+      </div>
+      <div class="slider-row">
+        <div class="slider-meta"><span>Feedback (Repeats)</span><span class="val" id="dFbVal">36%</span></div>
+        <input type="range" id="dFb" min="0" max="0.78" step="0.01" value="0.36">
+      </div>
+      <div class="slider-row">
+        <div class="slider-meta"><span>Delay Time (D.TIME)</span><span class="val" id="dTimeVal">375 ms</span></div>
+        <input type="range" id="dTime" min="30" max="800" step="1" value="375">
+      </div>
+    </div>
+
+    <!-- 5. Manual BandLab Studio Reverb -->
+    <div class="module">
+      <div class="mod-head">
+        <span class="mod-title"><span class="dot" id="revDot"></span>5. BandLab Studio Reverb (Manual)</span>
+        <label class="switch-label"><input type="checkbox" id="revToggle" checked> Active</label>
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-meta"><span>Reverb Mix</span><span class="val" id="rMixVal">22%</span></div>
+        <input type="range" id="rMix" min="0" max="0.70" step="0.01" value="0.22">
+      </div>
+      <div class="slider-row">
+        <div class="slider-meta"><span>Room Size / Decay</span><span class="val" id="rSizeVal">1.8 s</span></div>
+        <input type="range" id="rSize" min="0.4" max="4.2" step="0.1" value="1.8">
+      </div>
+      <div class="slider-row">
+        <div class="slider-meta"><span>Tone Damping</span><span class="val" id="rToneVal">5200 Hz</span></div>
+        <input type="range" id="rTone" min="1500" max="9000" step="100" value="5200">
+      </div>
+    </div>
+
+    <button class="master-btn" id="masterBtn">MASTER STUDIO RACK: ON</button>
+  </div>
+
+  <script>
+    // --- PWA Service Worker & Install Prompt ---
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+    document.getElementById('installBtn').addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+      } else {
+        alert(
+          'Install Instructions:\n\n' +
+          '1. Android Chrome: Tap 3-dots menu -> "Add to Home screen" / "Install app".\n' +
+          '2. Desktop Chrome/Edge: Click the Install icon in the address bar.\n' +
+          '3. iPhone Safari: Tap Share -> "Add to Home Screen".'
+        );
+      }
+    });
+
+    // --- Global Audio Graph State ---
+    let ctx = null;
+    let rawIn, gateGain, gateAnalyser;
+    let eqHpf, eqMud, eqPres, eqAir, eqAnalyser, postEqBus;
+    let dryBus, delayBus, reverbBus, masterLimiter;
+
+    // Delay Bank A & Bank B (Each bank has Left + Right DelayNodes for true Stereo Ping-Pong!)
+    // CRITICAL ANTI-KHAR-KHAR DESIGN: DelayNode.delayTime is NEVER changed while its gain > 0!
+    let dLeftA, dRightA, fbLeftA, fbRightA, crossLtoRA, crossRtoLA, panLA, panRA, bankGainA, filterA;
+    let dLeftB, dRightB, fbLeftB, fbRightB, crossLtoRB, crossRtoLB, panLB, panRB, bankGainB, filterB;
+    let activeBank = 'A';
+    let currentDelaySec = 0.375;
+    let delayMode = 'digital'; // 'digital' | 'pingpong' | 'analog'
+
+    // Manual Reverb
+    let revPreDelay, revConvolver, revTone, revBufferTimer = null;
+
+    // Sources & State
+    let mediaSrc = null, micStream = null, micSrc = null, grooveTimer = null;
+    let uploadedBuffer = null, uploadedName = 'studio_mix';
+    let masterOn = true;
+    let bpm = 120;
+    let subdiv = 0.75;
+    let noiseFloor = 0.006;
+    let currentGateGain = 1.0;
+
+    // Build smooth stereo impulse response for BandLab-style Reverb
+    function createStudioImpulse(audioCtx, seconds, decay) {
+      const rate = audioCtx.sampleRate;
+      const len = Math.max(1, Math.floor(rate * seconds));
+      const buf = audioCtx.createBuffer(2, len, rate);
+      for (let ch = 0; ch < 2; ch++) {
+        const out = buf.getChannelData(ch);
+        for (let i = 0; i < len; i++) {
+          const t = i / rate;
+          const env = Math.pow(1 - i / len, decay) * Math.exp(-t * (2.5 / seconds));
+          out[i] = (Math.random() * 2 - 1) * env;
+        }
+      }
+      return buf;
+    }
+
+    // Whole-file Autocorrelation BPM Detector (Accurate & Stable)
+    function analyzeBufferBpm(audioBuffer) {
+      const sr = audioBuffer.sampleRate;
+      const data = audioBuffer.getChannelData(0);
+      const maxLen = Math.min(data.length, sr * 40);
+      const hop = Math.floor(sr * 0.01); // 10ms frames
+      const frames = Math.floor(maxLen / hop);
+      if (frames < 200) return 120;
+
+      const env = new Float32Array(frames);
+      let lp = 0;
+      for (let f = 0; f < frames; f++) {
+        let sum = 0;
+        const base = f * hop;
+        for (let i = 0; i < hop; i++) {
+          const x = data[base + i];
+          lp = lp + 0.08 * (x - lp);
+          sum += lp * lp;
+        }
+        env[f] = Math.sqrt(sum / hop);
+      }
+
+      const onset = new Float32Array(frames);
+      let mean = 0;
+      for (let i = 1; i < frames; i++) {
+        const d = Math.max(0, env[i] - env[i - 1]);
+        onset[i] = d;
+        mean += d;
+      }
+      mean /= frames;
+      for (let i = 0; i < frames; i++) onset[i] -= mean;
+
+      const envRate = sr / hop;
+      const minLag = Math.floor(envRate * 60 / 170);
+      const maxLag = Math.floor(envRate * 60 / 68);
+      let bestLag = minLag;
+      let bestCorr = -Infinity;
+
+      for (let lag = minLag; lag <= maxLag; lag++) {
+        let corr = 0;
+        const n = frames - lag;
+        for (let i = 0; i < n; i++) corr += onset[i] * onset[i + lag];
+        const score = corr / n;
+        if (score > bestCorr) {
+          bestCorr = score;
+          bestLag = lag;
+        }
+      }
+
+      let detected = (60 * envRate) / bestLag;
+      while (detected < 75) detected *= 2;
+      while (detected > 158) detected /= 2;
+      return Math.round(detected * 10) / 10;
+    }
+
+    function createDelayBank(audioCtx, initialSec) {
+      const dL = audioCtx.createDelay(2.0);
+      const dR = audioCtx.createDelay(2.0);
+      dL.delayTime.value = initialSec;
+      dR.delayTime.value = initialSec;
+
+      const fbL = audioCtx.createGain();
+      const fbR = audioCtx.createGain();
+      const xLtoR = audioCtx.createGain();
+      const xRtoL = audioCtx.createGain();
+
+      const pL = audioCtx.createStereoPanner();
+      const pR = audioCtx.createStereoPanner();
+      pL.pan.value = -0.85;
+      pR.pan.value = 0.85;
+
+      const filt = audioCtx.createBiquadFilter();
+      filt.type = 'lowpass';
+      filt.frequency.value = 6500;
+
+      const bankOut = audioCtx.createGain();
+      bankOut.gain.value = 0.0;
+
+      // Input filter feeds Left delay directly (for Ping-Pong L->R->L) and Right delay in mono/digital mode
+      filt.connect(dL);
+      filt.connect(dR);
+
+      // Standard parallel feedback
+      dL.connect(fbL); fbL.connect(dL);
+      dR.connect(fbR); fbR.connect(dR);
+
+      // Cross feedback for Ping-Pong Stereo
+      dL.connect(xLtoR); xLtoR.connect(dR);
+      dR.connect(xRtoL); xRtoL.connect(dL);
+
+      dL.connect(pL); pL.connect(bankOut);
+      dR.connect(pR); pR.connect(bankOut);
+
+      return { dL, dR, fbL, fbR, xLtoR, xRtoL, pL, pR, filt, bankOut };
+    }
+
+    function configureBankRouting(bank, fbAmount, mode) {
+      const now = ctx.currentTime;
+      // Disconnect input from dR in pingpong mode so first echo hits Left, second hits Right!
+      try { bank.filt.disconnect(bank.dR); } catch (e) {}
+
+      if (mode === 'pingpong') {
+        bank.filt.frequency.setValueAtTime(5800, now);
+        bank.pL.pan.setValueAtTime(-0.9, now);
+        bank.pR.pan.setValueAtTime(0.9, now);
+        bank.fbL.gain.setValueAtTime(0, now);
+        bank.fbR.gain.setValueAtTime(0, now);
+        bank.xLtoR.gain.setValueAtTime(fbAmount, now);
+        bank.xRtoL.gain.setValueAtTime(fbAmount, now);
+      } else if (mode === 'analog') {
+        bank.filt.connect(bank.dR);
+        bank.filt.frequency.setValueAtTime(2600, now); // Warm dark BandLab tape echo
+        bank.pL.pan.setValueAtTime(-0.25, now);
+        bank.pR.pan.setValueAtTime(0.25, now);
+        bank.fbL.gain.setValueAtTime(fbAmount, now);
+        bank.fbR.gain.setValueAtTime(fbAmount, now);
+        bank.xLtoR.gain.setValueAtTime(0, now);
+        bank.xRtoL.gain.setValueAtTime(0, now);
+      } else {
+        // Classic BOSS DD-3 Digital Delay
+        bank.filt.connect(bank.dR);
+        bank.filt.frequency.setValueAtTime(6800, now);
+        bank.pL.pan.setValueAtTime(0, now);
+        bank.pR.pan.setValueAtTime(0, now);
+        bank.fbL.gain.setValueAtTime(fbAmount, now);
+        bank.fbR.gain.setValueAtTime(fbAmount, now);
+        bank.xLtoR.gain.setValueAtTime(0, now);
+        bank.xRtoL.gain.setValueAtTime(0, now);
+      }
+    }
+
+    function initAudio() {
+      if (ctx) {
+        if (ctx.state === 'suspended') ctx.resume();
+        return;
+      }
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+      rawIn = ctx.createGain();
+      gateGain = ctx.createGain();
+      gateAnalyser = ctx.createAnalyser();
+      gateAnalyser.fftSize = 1024;
+
+      // 1. Noise Gate Routing
+      rawIn.connect(gateAnalyser);
+      rawIn.connect(gateGain);
+
+      // 2. BandLab Auto Voice EQ Chain
+      eqHpf = ctx.createBiquadFilter();
+      eqHpf.type = 'highpass';
+      eqHpf.frequency.value = 90;
+
+      eqMud = ctx.createBiquadFilter();
+      eqMud.type = 'peaking';
+      eqMud.frequency.value = 320;
+      eqMud.Q.value = 1.6;
+      eqMud.gain.value = -2.5;
+
+      eqPres = ctx.createBiquadFilter();
+      eqPres.type = 'peaking';
+      eqPres.frequency.value = 3200;
+      eqPres.Q.value = 1.3;
+      eqPres.gain.value = 3.0;
+
+      eqAir = ctx.createBiquadFilter();
+      eqAir.type = 'highshelf';
+      eqAir.frequency.value = 9000;
+      eqAir.gain.value = 2.2;
+
+      eqAnalyser = ctx.createAnalyser();
+      eqAnalyser.fftSize = 2048;
+      postEqBus = ctx.createGain();
+
+      gateGain.connect(eqAnalyser);
+      gateGain.connect(eqHpf);
+      eqHpf.connect(eqMud);
+      eqMud.connect(eqPres);
+      eqPres.connect(eqAir);
+      eqAir.connect(postEqBus);
+
+      // 3. Master Buses & Brickwall Limiter (Prevents distortion/clipping)
+      dryBus = ctx.createGain();
+      delayBus = ctx.createGain();
+      reverbBus = ctx.createGain();
+
+      masterLimiter = ctx.createDynamicsCompressor();
+      masterLimiter.threshold.value = -2.0;
+      masterLimiter.knee.value = 8.0;
+      masterLimiter.ratio.value = 16.0;
+      masterLimiter.attack.value = 0.002;
+      masterLimiter.release.value = 0.12;
+
+      postEqBus.connect(dryBus);
+      dryBus.connect(masterLimiter);
+
+      // 4. Dual Zero-Artifact Delay Banks
+      const bankA = createDelayBank(ctx, currentDelaySec);
+      const bankB = createDelayBank(ctx, currentDelaySec);
+      dLeftA = bankA.dL; dRightA = bankA.dR; fbLeftA = bankA.fbL; fbRightA = bankA.fbR;
+      crossLtoRA = bankA.xLtoR; crossRtoLA = bankA.xRtoL; panLA = bankA.pL; panRA = bankA.pR;
+      bankGainA = bankA.bankOut; filterA = bankA.filt;
+
+      dLeftB = bankB.dL; dRightB = bankB.dR; fbLeftB = bankB.fbL; fbRightB = bankB.fbR;
+      crossLtoRB = bankB.xLtoR; crossRtoLB = bankB.xRtoL; panLB = bankB.pL; panRB = bankB.pR;
+      bankGainB = bankB.bankOut; filterB = bankB.filt;
+
+      bankGainA.gain.value = 1.0;
+      bankGainB.gain.value = 0.0;
+
+      postEqBus.connect(filterA);
+      postEqBus.connect(filterB);
+      bankGainA.connect(delayBus);
+      bankGainB.connect(delayBus);
+      delayBus.connect(masterLimiter);
+
+      // 5. Manual BandLab Studio Reverb
+      revPreDelay = ctx.createDelay(0.2);
+      revPreDelay.delayTime.value = 0.02;
+      revConvolver = ctx.createConvolver();
+      revConvolver.buffer = createStudioImpulse(ctx, 1.8, 2.5);
+      revTone = ctx.createBiquadFilter();
+      revTone.type = 'lowpass';
+      revTone.frequency.value = 5200;
+
+      postEqBus.connect(revPreDelay);
+      revPreDelay.connect(revConvolver);
+      revConvolver.connect(revTone);
+      revTone.connect(reverbBus);
+      reverbBus.connect(masterLimiter);
+
+      masterLimiter.connect(ctx.destination);
+
+      refreshAllParameters();
+      startSmoothNoiseGate();
+      startAutoVoiceEq();
+    }
+
+    // --- ZERO-KHAR-KHAR DELAY TIME SWITCHER ---
+    // Sets new delayTime on the COMPLETELY MUTED bank first, waits 15ms, then crossfades!
+    let switchTimer = null;
+    function switchDelayTimeCleanly(ms) {
+      if (!ctx) return;
+      const sec = Math.max(0.03, Math.min(0.8, ms / 1000.0));
+      currentDelaySec = sec;
+
+      const fbVal = parseFloat(document.getElementById('dFb').value);
+      const bankAObj = { dL: dLeftA, dR: dRightA, fbL: fbLeftA, fbR: fbRightA, xLtoR: crossLtoRA, xRtoL: crossRtoLA, pL: panLA, pR: panRA, filt: filterA };
+      const bankBObj = { dL: dLeftB, dR: dRightB, fbL: fbLeftB, fbR: fbRightB, xLtoR: crossLtoRB, xRtoL: crossRtoLB, pL: panLB, pR: panRB, filt: filterB };
+
+      if (switchTimer) clearTimeout(switchTimer);
+
+      const now = ctx.currentTime;
+      if (activeBank === 'A') {
+        // Ensure Bank B is silent BEFORE changing its delayTime
+        bankGainB.gain.setValueAtTime(0, now);
+        dLeftB.delayTime.setValueAtTime(sec, now);
+        dRightB.delayTime.setValueAtTime(sec, now);
+        configureBankRouting(bankBObj, fbVal, delayMode);
+
+        switchTimer = setTimeout(() => {
+          const t = ctx.currentTime;
+          bankGainA.gain.cancelScheduledValues(t);
+          bankGainB.gain.cancelScheduledValues(t);
+          bankGainA.gain.setValueAtTime(bankGainA.gain.value, t);
+          bankGainB.gain.setValueAtTime(0, t);
+          bankGainA.gain.linearRampToValueAtTime(0, t + 0.05);
+          bankGainB.gain.linearRampToValueAtTime(1, t + 0.05);
+
+          // Mute old Bank A feedback after fade out
+          fbLeftA.gain.setValueAtTime(0, t + 0.06);
+          fbRightA.gain.setValueAtTime(0, t + 0.06);
+          crossLtoRA.gain.setValueAtTime(0, t + 0.06);
+          crossRtoLA.gain.setValueAtTime(0, t + 0.06);
+          activeBank = 'B';
+        }, 15);
+      } else {
+        // Ensure Bank A is silent BEFORE changing its delayTime
+        bankGainA.gain.setValueAtTime(0, now);
+        dLeftA.delayTime.setValueAtTime(sec, now);
+        dRightA.delayTime.setValueAtTime(sec, now);
+        configureBankRouting(bankAObj, fbVal, delayMode);
+
+        switchTimer = setTimeout(() => {
+          const t = ctx.currentTime;
+          bankGainA.gain.cancelScheduledValues(t);
+          bankGainB.gain.cancelScheduledValues(t);
+          bankGainB.gain.setValueAtTime(bankGainB.gain.value, t);
+          bankGainA.gain.setValueAtTime(0, t);
+          bankGainB.gain.linearRampToValueAtTime(0, t + 0.05);
+          bankGainA.gain.linearRampToValueAtTime(1, t + 0.05);
+
+          fbLeftB.gain.setValueAtTime(0, t + 0.06);
+          fbRightB.gain.setValueAtTime(0, t + 0.06);
+          crossLtoRB.gain.setValueAtTime(0, t + 0.06);
+          crossRtoLB.gain.setValueAtTime(0, t + 0.06);
+          activeBank = 'A';
+        }, 15);
+      }
+    }
+
+    function refreshAllParameters() {
+      if (!ctx) return;
+      const now = ctx.currentTime;
+
+      const dOn = masterOn && document.getElementById('delayToggle').checked;
+      const rOn = masterOn && document.getElementById('revToggle').checked;
+      const eqOn = masterOn && document.getElementById('eqToggle').checked;
+      const gOn = masterOn && document.getElementById('gateToggle').checked;
+
+      document.getElementById('delayDot').classList.toggle('off', !dOn);
+      document.getElementById('revDot').classList.toggle('off', !rOn);
+      document.getElementById('eqDot').classList.toggle('off', !eqOn);
+      document.getElementById('gateDot').classList.toggle('off', !gOn);
+
+      const dMix = parseFloat(document.getElementById('dMix').value);
+      const dFb = parseFloat(document.getElementById('dFb').value);
+      const dTime = parseInt(document.getElementById('dTime').value, 10);
+
+      document.getElementById('dMixVal').textContent = Math.round(dMix * 100) + '%';
+      document.getElementById('dFbVal').textContent = Math.round(dFb * 100) + '%';
+      document.getElementById('dTimeVal').textContent = dTime + ' ms';
+
+      delayBus.gain.setTargetAtTime(dOn ? dMix : 0, now, 0.02);
+
+      const activeObj = activeBank === 'A'
+        ? { dL: dLeftA, dR: dRightA, fbL: fbLeftA, fbR: fbRightA, xLtoR: crossLtoRA, xRtoL: crossRtoLA, pL: panLA, pR: panRA, filt: filterA }
+        : { dL: dLeftB, dR: dRightB, fbL: fbLeftB, fbR: fbRightB, xLtoR: crossLtoRB, xRtoL: crossRtoLB, pL: panLB, pR: panRB, filt: filterB };
+      configureBankRouting(activeObj, dOn ? dFb : 0, delayMode);
+
+      const rMix = parseFloat(document.getElementById('rMix').value);
+      const rSize = parseFloat(document.getElementById('rSize').value);
+      const rTone = parseFloat(document.getElementById('rTone').value);
+      document.getElementById('rMixVal').textContent = Math.round(rMix * 100) + '%';
+      document.getElementById('rSizeVal').textContent = rSize.toFixed(1) + ' s';
+      document.getElementById('rToneVal').textContent = Math.round(rTone) + ' Hz';
+
+      reverbBus.gain.setTargetAtTime(rOn ? rMix : 0, now, 0.02);
+      revTone.frequency.setTargetAtTime(rTone, now, 0.03);
+    }
+
+    // --- BandLab Smooth Downward Expander Gate (Never Kat-Kat) ---
+    function startSmoothNoiseGate() {
+      const buf = new Float32Array(gateAnalyser.fftSize);
+      setInterval(() => {
+        if (!ctx) return;
+        const gOn = masterOn && document.getElementById('gateToggle').checked;
+        const amount = parseFloat(document.getElementById('gateSlider').value);
+        document.getElementById('gateVal').textContent = Math.round(amount * 100) + '%';
+        const now = ctx.currentTime;
+
+        if (!gOn || amount <= 0.01) {
+          gateGain.gain.setTargetAtTime(1.0, now, 0.04);
+          document.getElementById('gateMeter').style.width = '0%';
+          return;
+        }
+
+        gateAnalyser.getFloatTimeDomainData(buf);
+        let sum = 0;
+        for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+        const rms = Math.sqrt(sum / buf.length);
+
+        if (rms > 0.0002 && rms < noiseFloor) {
+          noiseFloor = noiseFloor * 0.85 + rms * 0.15;
+        } else if (rms < noiseFloor * 2.0) {
+          noiseFloor = noiseFloor * 0.992 + rms * 0.008;
+        }
+        noiseFloor = Math.max(0.001, Math.min(0.035, noiseFloor));
+
+        const thresh = noiseFloor * (1.5 + amount * 3.0);
+        const floorGain = 1.0 - amount * 0.82; // Keeps subtle natural room floor
+        let target = 1.0;
+        if (rms < thresh) {
+          const r = Math.max(0, rms / thresh);
+          target = floorGain + (1.0 - floorGain) * (r * r);
+        }
+
+        // 10ms fast open (words never clip) + 240ms smooth release (tails never chop)
+        const tc = target > currentGateGain ? 0.01 : 0.24;
+        currentGateGain = target;
+        gateGain.gain.setTargetAtTime(target, now, tc);
+        document.getElementById('gateMeter').style.width = Math.min(100, Math.round((1 - target) * 130)) + '%';
+      }, 20);
+    }
+
+    // --- BandLab Auto Voice EQ ---
+    function startAutoVoiceEq() {
+      const bins = new Uint8Array(eqAnalyser.frequencyBinCount);
+      setInterval(() => {
+        if (!ctx) return;
+        const eqOn = masterOn && document.getElementById('eqToggle').checked;
+        const now = ctx.currentTime;
+
+        if (!eqOn) {
+          eqHpf.frequency.setTargetAtTime(20, now, 0.06);
+          eqMud.gain.setTargetAtTime(0, now, 0.06);
+          eqPres.gain.setTargetAtTime(0, now, 0.06);
+          eqAir.gain.setTargetAtTime(0, now, 0.06);
+          document.getElementById('eqProfile').textContent = 'Mode: EQ Bypassed (Flat)';
+          document.getElementById('eqHpfVal').textContent = 'OFF';
+          document.getElementById('eqMudVal').textContent = '0.0 dB';
+          document.getElementById('eqPresVal').textContent = '0.0 dB';
+          document.getElementById('eqAirVal').textContent = '0.0 dB';
+          return;
+        }
+
+        eqAnalyser.getByteFrequencyData(bins);
+        const binHz = (ctx.sampleRate / 2) / bins.length;
+        let low = 0, high = 0, total = 0;
+        for (let i = 2; i < bins.length; i++) {
+          const hz = i * binHz;
+          const v = bins[i] / 255;
+          total += v;
+          if (hz >= 90 && hz < 360) low += v;
+          else if (hz >= 5500 && hz < 13000) high += v;
+        }
+        if (total < 3.5) return;
+
+        let hpfHz = 90, mudDb = -2.5, presDb = 3.0, airDb = 2.2, label = 'Balanced Studio Vocal';
+        if (low / total > 0.34) {
+          hpfHz = 105; mudDb = -4.0; presDb = 3.8; airDb = 3.0;
+          label = 'Deep / Warm Voice (De-Mud + Presence)';
+        } else if (high / total > 0.22) {
+          hpfHz = 80; mudDb = -1.5; presDb = 1.6; airDb = 1.0;
+          label = 'Bright / High Voice (Smooth & Warm)';
+        }
+
+        eqHpf.frequency.setTargetAtTime(hpfHz, now, 0.25);
+        eqMud.gain.setTargetAtTime(mudDb, now, 0.25);
+        eqPres.gain.setTargetAtTime(presDb, now, 0.25);
+        eqAir.gain.setTargetAtTime(airDb, now, 0.25);
+
+        document.getElementById('eqProfile').textContent = 'Mode: ' + label;
+        document.getElementById('eqHpfVal').textContent = hpfHz + ' Hz';
+        document.getElementById('eqMudVal').textContent = mudDb.toFixed(1) + ' dB';
+        document.getElementById('eqPresVal').textContent = '+' + presDb.toFixed(1) + ' dB';
+        document.getElementById('eqAirVal').textContent = '+' + airDb.toFixed(1) + ' dB';
+      }, 160);
+    }
+
+    function applyBpmToDelay() {
+      let ms = (60000 / bpm) * subdiv;
+      while (ms > 800) ms /= 2;
+      ms = Math.max(30, Math.round(ms));
+
+      document.getElementById('bpmNum').textContent = bpm;
+      document.getElementById('dTime').value = ms;
+      document.getElementById('dTimeVal').textContent = ms + ' ms';
+      switchDelayTimeCleanly(ms);
+    }
+
+    // --- File Upload ---
+    const player = document.getElementById('player');
+    document.getElementById('audioFile').addEventListener('change', async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      initAudio();
+      stopGroove();
+
+      uploadedName = file.name.replace(/\.[^/.]+$/, '');
+      document.getElementById('fileLabel').textContent = file.name;
+      const badge = document.getElementById('bpmBadge');
+      badge.textContent = 'ANALYZING...';
+      badge.className = 'badge warn';
+
+      try {
+        const ab = await file.arrayBuffer();
+        uploadedBuffer = await ctx.decodeAudioData(ab.slice(0));
+        bpm = analyzeBufferBpm(uploadedBuffer);
+        applyBpmToDelay();
+        badge.textContent = `LOCKED ${bpm} BPM`;
+        badge.className = 'badge';
+        document.getElementById('exportBtn').disabled = false;
+      } catch (err) {
+        badge.textContent = 'MANUAL BPM';
+        badge.className = 'badge warn';
+      }
+
+      player.src = URL.createObjectURL(file);
+      if (!mediaSrc) {
+        mediaSrc = ctx.createMediaElementSource(player);
+        mediaSrc.connect(rawIn);
+      }
+      document.getElementById('playBtn').disabled = false;
+      player.play();
+    });
+
+    document.getElementById('playBtn').addEventListener('click', () => {
+      initAudio();
+      player.paused ? player.play() : player.pause();
+    });
+
+    // --- Offline WAV Export (EQ + Delay/PingPong + Reverb) ---
+    function bufferToWav(buffer) {
+      const chs = buffer.numberOfChannels;
+      const sr = buffer.sampleRate;
+      const frames = buffer.length;
+      const dataSize = frames * chs * 2;
+      const ab = new ArrayBuffer(44 + dataSize);
+      const v = new DataView(ab);
+      const str = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+
+      str(0, 'RIFF'); v.setUint32(4, 36 + dataSize, true); str(8, 'WAVE');
+      str(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true);
+      v.setUint16(22, chs, true); v.setUint32(24, sr, true);
+      v.setUint32(28, sr * chs * 2, true); v.setUint16(32, chs * 2, true);
+      v.setUint16(34, 16, true); str(36, 'data'); v.setUint32(40, dataSize, true);
+
+      let pos = 44;
+      for (let i = 0; i < frames; i++) {
+        for (let c = 0; c < chs; c++) {
+          const s = Math.max(-1, Math.min(1, buffer.getChannelData(c)[i]));
+          v.setInt16(pos, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+          pos += 2;
+        }
+      }
+      return new Blob([ab], { type: 'audio/wav' });
+    }
+
+    document.getElementById('exportBtn').addEventListener('click', async function () {
+      if (!uploadedBuffer) return;
+      this.disabled = true;
+      this.textContent = 'Rendering Clean Studio WAV...';
+
+      try {
+        const tail = Math.floor(uploadedBuffer.sampleRate * 2.5);
+        const off = new OfflineAudioContext(2, uploadedBuffer.length + tail, uploadedBuffer.sampleRate);
+        const src = off.createBufferSource();
+        src.buffer = uploadedBuffer;
+
+        const eqOn = masterOn && document.getElementById('eqToggle').checked;
+        const dOn = masterOn && document.getElementById('delayToggle').checked;
+        const rOn = masterOn && document.getElementById('revToggle').checked;
+
+        // EQ
+        const hpf = off.createBiquadFilter(); hpf.type = 'highpass'; hpf.frequency.value = eqOn ? 90 : 20;
+        const mud = off.createBiquadFilter(); mud.type = 'peaking'; mud.frequency.value = 320; mud.Q.value = 1.6; mud.gain.value = eqOn ? eqMud.gain.value : 0;
+        const pres = off.createBiquadFilter(); pres.type = 'peaking'; pres.frequency.value = 3200; pres.Q.value = 1.3; pres.gain.value = eqOn ? eqPres.gain.value : 0;
+        const air = off.createBiquadFilter(); air.type = 'highshelf'; air.frequency.value = 9000; air.gain.value = eqOn ? eqAir.gain.value : 0;
+
+        const lim = off.createDynamicsCompressor();
+        lim.threshold.value = -2.0; lim.knee.value = 8; lim.ratio.value = 16;
+
+        src.connect(hpf); hpf.connect(mud); mud.connect(pres); pres.connect(air);
+        air.connect(lim); // Dry
+
+        // Delay / Ping-Pong
+        if (dOn) {
+          const dSec = parseInt(document.getElementById('dTime').value, 10) / 1000.0;
+          const dMix = parseFloat(document.getElementById('dMix').value);
+          const dFb = parseFloat(document.getElementById('dFb').value);
+
+          const dOut = off.createGain(); dOut.gain.value = dMix;
+          const dFilt = off.createBiquadFilter(); dFilt.type = 'lowpass';
+          dFilt.frequency.value = delayMode === 'analog' ? 2600 : (delayMode === 'pingpong' ? 5800 : 6800);
+
+          const dL = off.createDelay(2.0); dL.delayTime.value = dSec;
+          const dR = off.createDelay(2.0); dR.delayTime.value = dSec;
+          const pL = off.createStereoPanner(); pL.pan.value = delayMode === 'pingpong' ? -0.9 : 0;
+          const pR = off.createStereoPanner(); pR.pan.value = delayMode === 'pingpong' ? 0.9 : 0;
+
+          air.connect(dFilt);
+          dFilt.connect(dL);
+          if (delayMode === 'pingpong') {
+            const xLR = off.createGain(); xLR.gain.value = dFb;
+            const xRL = off.createGain(); xRL.gain.value = dFb;
+            dL.connect(xLR); xLR.connect(dR);
+            dR.connect(xRL); xRL.connect(dL);
+          } else {
+            dFilt.connect(dR);
+            const fL = off.createGain(); fL.gain.value = dFb;
+            const fR = off.createGain(); fR.gain.value = dFb;
+            dL.connect(fL); fL.connect(dL);
+            dR.connect(fR); fR.connect(dR);
+          }
+          dL.connect(pL); pL.connect(dOut);
+          dR.connect(pR); pR.connect(dOut);
+          dOut.connect(lim);
+        }
+
+        // Reverb
+        if (rOn) {
+          const rPre = off.createDelay(0.2); rPre.delayTime.value = 0.02;
+          const rConv = off.createConvolver();
+          rConv.buffer = createStudioImpulse(off, parseFloat(document.getElementById('rSize').value), 2.5);
+          const rT = off.createBiquadFilter(); rT.type = 'lowpass'; rT.frequency.value = parseFloat(document.getElementById('rTone').value);
+          const rOut = off.createGain(); rOut.gain.value = parseFloat(document.getElementById('rMix').value);
+
+          air.connect(rPre); rPre.connect(rConv); rConv.connect(rT); rT.connect(rOut); rOut.connect(lim);
+        }
+
+        lim.connect(off.destination);
+        src.start(0);
+        const rendered = await off.startRendering();
+        const blob = bufferToWav(rendered);
+
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${uploadedName}_StudioMix.wav`;
+        a.click();
+      } finally {
+        this.disabled = false;
+        this.innerHTML = '&#128190; Export Processed Audio (.WAV)';
+      }
+    });
+
+    // --- Live Mic ---
+    document.getElementById('micBtn').addEventListener('click', async function () {
+      initAudio();
+      if (micStream) {
+        micStream.getTracks().forEach(t => t.stop());
+        micStream = null;
+        this.classList.remove('active');
+        this.innerHTML = '&#127908; Live Mic';
+        return;
+      }
+      try {
+        micStream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+        });
+        micSrc = ctx.createMediaStreamSource(micStream);
+        micSrc.connect(rawIn);
+        this.classList.add('active');
+        this.innerHTML = '&#9632; Stop Mic';
+        noiseFloor = 0.006;
+      } catch (err) {
+        alert('Microphone permission denied or unavailable.');
+      }
+    });
+
+    // --- Test Groove ---
+    function stopGroove() {
+      if (grooveTimer) {
+        clearInterval(grooveTimer);
+        grooveTimer = null;
+        document.getElementById('grooveBtn').innerHTML = '&#9835; Test Groove';
+      }
+    }
+
+    document.getElementById('grooveBtn').addEventListener('click', () => {
+      initAudio();
+      if (grooveTimer) { stopGroove(); return; }
+      player.pause();
+      document.getElementById('grooveBtn').innerHTML = '&#9632; Stop Groove';
+
+      bpm = 115;
+      applyBpmToDelay();
+      const badge = document.getElementById('bpmBadge');
+      badge.textContent = 'LOCKED 115 BPM';
+      badge.className = 'badge';
+
+      const stepMs = (60000 / bpm) / 2;
+      const notes = [220, 261.63, 329.63, 392.0, 329.63, 293.66];
+      let step = 0;
+
+      const tick = () => {
+        const t = ctx.currentTime;
+        if (step % 2 === 0) {
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.frequency.setValueAtTime(118, t);
+          osc.frequency.exponentialRampToValueAtTime(44, t + 0.11);
+          g.gain.setValueAtTime(0.45, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+          osc.connect(g); g.connect(rawIn);
+          osc.start(t); osc.stop(t + 0.16);
+        }
+        if (step % 4 === 0 || step % 4 === 3) {
+          const osc = ctx.createOscillator();
+          const f = ctx.createBiquadFilter();
+          const g = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(notes[step % notes.length], t);
+          f.type = 'lowpass'; f.frequency.value = 1800;
+          g.gain.setValueAtTime(0.28, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+          osc.connect(f); f.connect(g); g.connect(rawIn);
+          osc.start(t); osc.stop(t + 0.23);
+        }
+        step++;
+      };
+      tick();
+      grooveTimer = setInterval(tick, stepMs);
+    });
+
+    // --- Mode & Subdivision Controls ---
+    document.querySelectorAll('.pill[data-dmode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        initAudio();
+        document.querySelectorAll('.pill[data-dmode]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        delayMode = btn.dataset.dmode;
+        refreshAllParameters();
+      });
+    });
+
+    document.querySelectorAll('.pill[data-sub]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        initAudio();
+        document.querySelectorAll('.pill[data-sub]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        subdiv = parseFloat(btn.dataset.sub);
+        applyBpmToDelay();
+      });
+    });
+
+    document.getElementById('bpmHalf').addEventListener('click', () => {
+      initAudio();
+      bpm = Math.max(50, Math.round((bpm / 2) * 10) / 10);
+      applyBpmToDelay();
+      document.getElementById('bpmBadge').textContent = `HALF ${bpm} BPM`;
+    });
+
+    document.getElementById('bpmDouble').addEventListener('click', () => {
+      initAudio();
+      bpm = Math.min(220, Math.round((bpm * 2) * 10) / 10);
+      applyBpmToDelay();
+      document.getElementById('bpmBadge').textContent = `DOUBLE ${bpm} BPM`;
+    });
+
+    let taps = [];
+    document.getElementById('tapBtn').addEventListener('click', () => {
+      initAudio();
+      const now = performance.now();
+      taps.push(now);
+      if (taps.length > 4) taps.shift();
+      if (taps.length >= 2) {
+        const avg = (taps[taps.length - 1] - taps[0]) / (taps.length - 1);
+        if (avg > 260 && avg < 1300) {
+          bpm = Math.round((60000 / avg) * 10) / 10;
+          applyBpmToDelay();
+          document.getElementById('bpmBadge').textContent = `TAPPED ${bpm} BPM`;
+        }
+      }
+    });
+
+    // Sliders & Toggles
+    ['gateToggle', 'eqToggle', 'delayToggle', 'revToggle', 'dMix', 'dFb', 'rMix', 'rTone'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => { initAudio(); refreshAllParameters(); });
+    });
+
+    document.getElementById('rSize').addEventListener('input', () => {
+      initAudio();
+      refreshAllParameters();
+      if (revBufferTimer) clearTimeout(revBufferTimer);
+      revBufferTimer = setTimeout(() => {
+        const s = parseFloat(document.getElementById('rSize').value);
+        revConvolver.buffer = createStudioImpulse(ctx, s, 2.5);
+      }, 120);
+    });
+
+    // Debounced manual D.TIME slider so dragging never causes khar-khar!
+    let manualDelayTimer = null;
+    document.getElementById('dTime').addEventListener('input', e => {
+      initAudio();
+      const ms = parseInt(e.target.value, 10);
+      document.getElementById('dTimeVal').textContent = ms + ' ms';
+      document.getElementById('bpmBadge').textContent = 'MANUAL TIME';
+      document.getElementById('bpmBadge').className = 'badge warn';
+      if (manualDelayTimer) clearTimeout(manualDelayTimer);
+      manualDelayTimer = setTimeout(() => switchDelayTimeCleanly(ms), 80);
+    });
+
+    document.getElementById('masterBtn').addEventListener('click', function () {
+      initAudio();
+      masterOn = !masterOn;
+      this.textContent = masterOn ? 'MASTER STUDIO RACK: ON' : 'MASTER STUDIO RACK: OFF';
+      this.classList.toggle('bypassed', !masterOn);
+      refreshAllParameters();
+    });
+  </script>
+</body>
+</html>

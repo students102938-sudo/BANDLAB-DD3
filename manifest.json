@@ -1,0 +1,17 @@
+{
+  "name": "BandLab Studio & BOSS DD-3 Rack",
+  "short_name": "Studio Rack",
+  "description": "Zero-Glitch Dual-Buffer Delay, Ping-Pong Echo, BandLab Auto Voice EQ, Noise Gate & Studio Reverb",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0e14",
+  "theme_color": "#ef4444",
+  "icons": [
+    {
+      "src": "/static/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
